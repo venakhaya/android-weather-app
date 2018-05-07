@@ -39,12 +39,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity {
-    private PersistableBundle persistableBundle;
-    static final int REQUEST_LOCATION = 1;
-    protected LocationManager locationManager;
-    private WeatherResponse weatherResponse;
-    List<Address> addresses;
-    private Coordinates coordinates;
+    private static final long MINUTES = 1000;
+    private static final long DISTANCE = 10000;
+    private static final int REQUEST_LOCATION = 1;
+
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.fab)
@@ -61,7 +60,14 @@ public class MainActivity extends BaseActivity {
     TextView locationTextView;
     @BindView(R.id.progressBar1)
     ProgressBar progressBar;
+
     private Activity activity;
+    private PersistableBundle persistableBundle;
+    private LocationManager locationManager;
+    private WeatherResponse weatherResponse;
+    private List<Address> addresses;
+    private Coordinates coordinates;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,13 +122,13 @@ public class MainActivity extends BaseActivity {
 
             if (location != null) {
                 Geocoder geocoder;
+                coordinates = new Coordinates(location.getLatitude(), location.getLongitude());
                 geocoder = new Geocoder(context, Locale.getDefault());
                 try {
-                    addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    addresses = geocoder.getFromLocation(coordinates.getLatitude(), coordinates.getLongitude(), 1);
                 } catch (Exception e) {
 
                 }
-                coordinates = new Coordinates(location.getLatitude(), location.getLongitude());
                 executeApi(coordinates);
             }
         }
@@ -164,7 +170,7 @@ public class MainActivity extends BaseActivity {
 
     private void updateUI(WeatherResponse results) {
         weatherResponse = results;
-        dateTextView.setText("TODAY," + Util.getDate());
+        dateTextView.setText(getString(R.string.today) + " " + Util.getDate());
         maxTextView.setText(String.valueOf(weatherResponse.getMain().getMaxTemp()) + (char) 0x00B0 + "C");
         minTextView.setText(String.valueOf(weatherResponse.getMain().getMinTemp()) + (char) 0x00B0 + "C");
         String iconUrl = getString(R.string.image_host) + weatherResponse.getWeatherList().get(0).getIcon() + ".png";
@@ -174,10 +180,10 @@ public class MainActivity extends BaseActivity {
                 .centerInside()
                 .into(weatherImageView);
         if (addresses != null && addresses.size() > 0) {
-            locationTextView.setText(addresses.get(0).getLocality() + "," + addresses.get(0).getCountryName());
+            locationTextView.setText(addresses.get(0).getLocality() + ", " + addresses.get(0).getCountryName());
         } else {
             //API response not accurate
-            locationTextView.setText(weatherResponse.getName() + " , " + weatherResponse.getSys().getCountry());
+            locationTextView.setText(weatherResponse.getName() + ", " + weatherResponse.getSys().getCountry());
         }
         progressBar.setVisibility(View.GONE);
     }
@@ -211,7 +217,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void requestLocation() {
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10000, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINUTES, DISTANCE, locationListener);
 
     }
 
