@@ -16,10 +16,10 @@ import java.util.Date;
 public class Util {
     public static boolean hasInternetConnection(Activity context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
-        if (hasInternetConnection(context)) {
+        if (hasInternetPermission(context)) {
             return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
         } else {
-            ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+            ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.INTERNET}, 2);
             return false;
         }
     }
