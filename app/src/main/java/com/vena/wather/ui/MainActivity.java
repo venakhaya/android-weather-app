@@ -1,6 +1,7 @@
 package com.vena.wather.ui;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,9 +15,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +22,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.vena.wather.R;
 import com.vena.wather.events.ResultsReceiverEvent;
-import com.vena.wather.handler.WeatherJobJobScheduler;
+import com.vena.wather.handler.WeatherJobScheduler;
 import com.vena.wather.model.Coordinates;
 import com.vena.wather.network.WeatherResponse;
 import com.vena.wather.utils.Util;
@@ -53,6 +51,7 @@ public class MainActivity extends BaseActivity implements LocationListener {
     TextView minTextView;
     @BindView(R.id.location_text_view)
     TextView locationTextView;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,17 +62,15 @@ public class MainActivity extends BaseActivity implements LocationListener {
         setSupportActionBar(toolbar);
         locationListener = this;
         getLocation();
-
-
-
     }
 
     private void getLocation() {
+
         persistableBundle = new PersistableBundle();
         coordinates = new Coordinates(-33.8894603, 18.4781874);
         persistableBundle.putDouble("lat", coordinates.getLatitude());
         persistableBundle.putDouble("lon", coordinates.getLongitude());
-        jobHandler.execute(new WeatherJobJobScheduler(weatherResultsReceiverEventListener, persistableBundle));
+        jobHandler.execute(new WeatherJobScheduler(weatherResultsReceiverEventListener, persistableBundle));
 //        locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
 //        if (hasLocationPermission()) {
 //            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
@@ -91,10 +88,9 @@ public class MainActivity extends BaseActivity implements LocationListener {
             maxTextView.setText(String.valueOf(weatherResponse.getMain().getMaxTemp()) + (char) 0x00B0 + "C");
             minTextView.setText(String.valueOf(weatherResponse.getMain().getMinTemp()) + (char) 0x00B0 + "C");
             String iconUrl = getString(R.string.image_host) + weatherResponse.getWeatherList().get(0).getIcon() + ".png";
-            //weatherImageView.setImageBitmap(StringToBitMap(weatherResponse.getWeatherList().get(0).getIcon()));
             Picasso.get()
                     .load(iconUrl)
-                    .resize(50, 50)
+                    .resize(150, 150)
                     .centerInside()
                     .into(weatherImageView);
             locationTextView.setText(weatherResponse.getName() + "," + weatherResponse.getSys().getCountry());
@@ -124,7 +120,7 @@ public class MainActivity extends BaseActivity implements LocationListener {
 //            persistableBundle = new PersistableBundle();
 //            persistableBundle.putDouble("lat", location.getLatitude());
 //            persistableBundle.putDouble("lon", location.getLongitude());
-//            jobHandler.execute(new WeatherJobJobScheduler(weatherResultsReceiverEventListener, persistableBundle));
+//            jobHandler.execute(new WeatherJobScheduler(weatherResultsReceiverEventListener, persistableBundle));
         }
     }
 

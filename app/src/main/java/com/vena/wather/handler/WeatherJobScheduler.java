@@ -12,16 +12,16 @@ import com.vena.wather.services.WeatherJobService;
  * Created by khaya on 2018/04/19.
  */
 
-public class WeatherJobJobScheduler extends BaseScheduler implements JobScheduler {
+public class WeatherJobScheduler extends BaseScheduler implements JobScheduler {
 
     private static final int JOB_ID = 10;
     private static final long JOB_INTERVAL = 1000 * 60 * 60;
 
-    public WeatherJobJobScheduler(PersistableBundle persistableBundle) {
+    public WeatherJobScheduler(PersistableBundle persistableBundle) {
         super(persistableBundle);
     }
 
-    public WeatherJobJobScheduler(ResultsReceiverEvent resultsReceiverEvent, PersistableBundle persistableBundle) {
+    public WeatherJobScheduler(ResultsReceiverEvent resultsReceiverEvent, PersistableBundle persistableBundle) {
         super(persistableBundle);
 
         WeatherJobService.setResultsReceiver(resultsReceiverEvent);

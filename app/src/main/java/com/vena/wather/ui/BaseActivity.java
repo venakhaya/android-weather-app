@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.vena.wather.application.WeatherApplication;
 import com.vena.wather.handler.JobHandler;
-import com.vena.wather.handler.WeatherJobJobScheduler;
 
 import javax.inject.Inject;
 
