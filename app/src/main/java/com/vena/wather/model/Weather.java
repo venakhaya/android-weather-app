@@ -2,6 +2,7 @@ package com.vena.wather.model;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
 @Entity
 public class Weather implements Serializable {
     @PrimaryKey
+    @NonNull
     @SerializedName("id")
     private long id;
     @SerializedName("main")

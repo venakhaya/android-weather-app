@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class Wind implements Serializable {
     @SerializedName("speed")
     private float speed;
-    @SerializedName("speed")
+    @SerializedName("deg")
     private float deg;
 
     public float getSpeed() {

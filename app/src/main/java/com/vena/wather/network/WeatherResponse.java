@@ -1,7 +1,12 @@
 package com.vena.wather.network;
 
 import com.google.gson.annotations.SerializedName;
+import com.vena.wather.model.Clouds;
+import com.vena.wather.model.Coordinates;
+import com.vena.wather.model.Main;
+import com.vena.wather.model.Sys;
 import com.vena.wather.model.Weather;
+import com.vena.wather.model.Wind;
 
 import java.util.ArrayList;
 
@@ -23,6 +28,19 @@ public class WeatherResponse {
     private String base;
     @SerializedName("weather")
     private ArrayList<Weather> weatherList;
+    @SerializedName("main")
+    private Main main;
+    @SerializedName("visibility")
+    private long visibility;
+    @SerializedName("wind")
+    private Wind wind;
+    @SerializedName("clouds")
+    private Clouds clouds;
+    @SerializedName("coord")
+    private Coordinates coordinates;
+    @SerializedName("sys")
+    private Sys sys;
+
 
     public long getId() {
         return id;
@@ -70,5 +88,53 @@ public class WeatherResponse {
 
     public void setWeatherList(ArrayList<Weather> weatherList) {
         this.weatherList = weatherList;
+    }
+
+    public Main getMain() {
+        return main;
+    }
+
+    public void setMain(Main main) {
+        this.main = main;
+    }
+
+    public long getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(long visibility) {
+        this.visibility = visibility;
+    }
+
+    public Wind getWind() {
+        return wind;
+    }
+
+    public void setWind(Wind wind) {
+        this.wind = wind;
+    }
+
+    public Clouds getClouds() {
+        return clouds;
+    }
+
+    public void setClouds(Clouds clouds) {
+        this.clouds = clouds;
+    }
+
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
+    public void setCoordinates(Coordinates coordinates) {
+        this.coordinates = coordinates;
+    }
+
+    public Sys getSys() {
+        return sys;
+    }
+
+    public void setSys(Sys sys) {
+        this.sys = sys;
     }
 }

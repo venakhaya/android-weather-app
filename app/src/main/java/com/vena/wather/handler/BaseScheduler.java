@@ -5,6 +5,8 @@ import android.app.job.JobScheduler;
 import android.content.Context;
 import android.os.PersistableBundle;
 
+import com.vena.wather.application.WeatherApplication;
+
 import javax.inject.Inject;
 
 public class BaseScheduler {
@@ -23,6 +25,7 @@ public class BaseScheduler {
      **/
     public BaseScheduler(PersistableBundle persistableBundle) {
         this.persistableBundle = persistableBundle;
+        WeatherApplication.getAppComponent().inject(this);
     }
 
     /**
@@ -31,5 +34,6 @@ public class BaseScheduler {
      **/
     public BaseScheduler() {
         persistableBundle = new PersistableBundle();
+        WeatherApplication.getAppComponent().inject(this);
     }
 }

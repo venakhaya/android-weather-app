@@ -21,7 +21,7 @@ import retrofit2.Response;
 
 public class WeatherJobService extends BaseService {
 
-    private ArrayList<Weather> weatherList;
+    private WeatherResponse weatherResponse;
 
     @Override
     public void onCreate() {
@@ -36,10 +36,23 @@ public class WeatherJobService extends BaseService {
         weatherResponseCall.enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
-                weatherList = response.body().getWeatherList();
+                weatherResponse = response.body();
                 if (resultsReceiverEvent != null) {
-                    resultsReceiverEvent.onSuccess(weatherList);
-                    updateDao.execute();
+                    if (weatherResponse == null) {
+                        resultsReceiverEvent.onFailed(context.getString(R.string.api_fail));
+                        return;
+                    }
+
+                    resultsReceiverEvent.onSuccess(weatherResponse);
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            for (Weather weather : weatherResponse.getWeatherList())
+                                appDatabase.weatherDao().update(weather);
+                            return null;
+                        }
+                    };
+
                 }
             }
 
@@ -71,12 +84,5 @@ public class WeatherJobService extends BaseService {
         WeatherJobService.resultsReceiverEvent = resultsReceiverEvent;
     }
 
-    private AsyncTask updateDao = new AsyncTask<Void, Void, Void>() {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            appDatabase.weatherDao().update(weatherList.get(0));
-            return null;
-        }
-    };
 
 }

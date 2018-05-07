@@ -10,7 +10,7 @@ import com.vena.wather.modules.NetModule;
 
 
 public class WeatherApplication extends Application {
-    private AppComponent appComponent;
+    private static AppComponent appComponent;
 
     @Override
     public void onCreate() {
@@ -20,7 +20,7 @@ public class WeatherApplication extends Application {
         appComponent.inject(this);
     }
 
-    public AppComponent getAppComponent() {
+    public static AppComponent getAppComponent() {
         return appComponent;
     }
 }

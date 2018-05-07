@@ -23,6 +23,7 @@ public class WeatherJobJobScheduler extends BaseScheduler implements JobSchedule
 
     public WeatherJobJobScheduler(ResultsReceiverEvent resultsReceiverEvent, PersistableBundle persistableBundle) {
         super(persistableBundle);
+
         WeatherJobService.setResultsReceiver(resultsReceiverEvent);
     }
 

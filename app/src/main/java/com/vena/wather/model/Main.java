@@ -7,19 +7,19 @@ import java.io.Serializable;
 public class Main implements Serializable {
 
     @SerializedName("temp")
-    float temp;
+    private float temp;
     @SerializedName("pressure")
-    float pressure;
+    private float pressure;
     @SerializedName("humidity")
-    float humidity;
+    private float humidity;
     @SerializedName("temp_min")
-    float minTemp;
+    private float minTemp;
     @SerializedName("temp_max")
-    float maxTemp;
+    private float maxTemp;
     @SerializedName("sea_level")
-    float seaLevel;
+    private float seaLevel;
     @SerializedName("grnd_level")
-    float groundLevel;
+    private float groundLevel;
 
 
     public float getTempreture() {
@@ -54,7 +54,7 @@ public class Main implements Serializable {
         this.minTemp = minTemp;
     }
 
-    public float getMaximumTempreture() {
+    public float getMaxTemp() {
         return maxTemp;
     }
 

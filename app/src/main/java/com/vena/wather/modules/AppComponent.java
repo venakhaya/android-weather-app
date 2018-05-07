@@ -19,4 +19,5 @@ public interface AppComponent {
     void inject(BaseService baseService);
 
     void inject(BaseScheduler baseScheduler);
+
 }
