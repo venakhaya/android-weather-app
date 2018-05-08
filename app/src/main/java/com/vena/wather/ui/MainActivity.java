@@ -32,7 +32,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity {
 
-    private static final long MINUTES = 50000;
+    private static final long MINUTES = 60000;
     private static final long DISTANCE = 100;
 
     @BindView(R.id.toolbar)
@@ -92,7 +92,6 @@ public class MainActivity extends BaseActivity {
             });
 
         }
-
 
         @Override
         public void onFailed(String message) {
