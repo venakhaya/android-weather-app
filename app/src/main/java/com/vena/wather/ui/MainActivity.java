@@ -2,8 +2,6 @@ package com.vena.wather.ui;
 
 import android.app.Activity;
 import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -23,9 +21,6 @@ import com.vena.wather.handler.WeatherJobScheduler;
 import com.vena.wather.model.Coordinates;
 import com.vena.wather.network.WeatherResponse;
 import com.vena.wather.utils.Util;
-
-import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,9 +49,8 @@ public class MainActivity extends BaseActivity {
 
     private Activity activity;
     private PersistableBundle persistableBundle;
-    private List<Address> addresses;
-    private Coordinates coordinates;
-    private boolean apiBusy;
+    private Address address;
+    private boolean isNetworkCallBusy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,19 +59,7 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         activity = this;
-        if (Util.hasInternetConnection(this)) {
-            apiBusy = true;
-            if (coordinates != null) {
-                executeApi(coordinates);
-            } else {
-                getLocation();
-            }
-        } else {
-            Toast.makeText(context, "No internet connection", Toast.LENGTH_LONG).show();
-            progressBar.setVisibility(View.GONE);
-        }
-
-
+        getLocationDetails();
     }
 
     private ResultsReceiverEvent weatherResultsReceiverEventListener = new ResultsReceiverEvent<WeatherResponse>() {
@@ -87,7 +69,7 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void run() {
                     updateUI(results);
-                    apiBusy = false;
+                    isNetworkCallBusy = !isNetworkCallBusy;
                 }
             });
 
@@ -95,28 +77,28 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public void onFailed(String message) {
-            apiBusy = false;
+            isNetworkCallBusy = !isNetworkCallBusy;
             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
             progressBar.setVisibility(View.GONE);
         }
     };
 
+    private void getLocationDetails() {
+        if (Util.hasInternetConnection(this)) {
+            isNetworkCallBusy = !isNetworkCallBusy;
+            if (!isNetworkCallBusy) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINUTES, DISTANCE, locationListener);
+            }
+        } else {
+            Toast.makeText(context, getString(R.string.no_connection), Toast.LENGTH_LONG).show();
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (Util.hasInternetConnection(this)) {
-            if (!apiBusy) {
-                if (coordinates != null) {
-                    executeApi(coordinates);
-                } else {
-                    getLocation();
-                }
-            }
-        } else {
-            Toast.makeText(context, "No internet connection", Toast.LENGTH_LONG).show();
-            progressBar.setVisibility(View.GONE);
-        }
+        getLocationDetails();
     }
 
     private void executeApi(Coordinates coordinates) {
@@ -126,27 +108,20 @@ public class MainActivity extends BaseActivity {
         jobHandler.execute(new WeatherJobScheduler(weatherResultsReceiverEventListener, persistableBundle));
     }
 
-    private void getLocation() {
-        requestLocation();
-    }
-
     private LocationEvent locationListener = new LocationEvent() {
 
         @Override
-        public void onLocationCoordinate(Coordinates coordinates) {
-            Geocoder geocoder;
-            geocoder = new Geocoder(context, Locale.getDefault());
-            try {
-                addresses = geocoder.getFromLocation(coordinates.getLatitude(), coordinates.getLongitude(), 1);
-            } catch (Exception e) {
-
-            }
+        public void onLocationCoordinate(final Coordinates coordinates) {
             executeApi(coordinates);
+        }
+
+        @Override
+        public void onLocationAddress(final Address locationAddress) {
+            address = locationAddress;
         }
     };
 
     private void updateUI(final WeatherResponse weatherResponse) {
-
         dateTextView.setText(getString(R.string.today) + " " + Util.getDate());
         maxTextView.setText(getString(R.string.max) + " " + String.valueOf(weatherResponse.getMain().getMaxTemp()) + (char) 0x00B0 + "C");
         minTextView.setText(getString(R.string.min) + " " + String.valueOf(weatherResponse.getMain().getMinTemp()) + (char) 0x00B0 + "C");
@@ -156,19 +131,12 @@ public class MainActivity extends BaseActivity {
                 .resize(150, 150)
                 .centerInside()
                 .into(weatherImageView);
-        if (addresses != null && addresses.size() > 0) {
-            locationTextView.setText(addresses.get(0).getLocality() + ", " + addresses.get(0).getCountryName());
+        if (address != null) {
+            locationTextView.setText(address.getLocality() + ", " + address.getCountryName());
         } else {
             //API response not accurate
             locationTextView.setText(weatherResponse.getName() + ", " + weatherResponse.getSys().getCountry());
         }
         progressBar.setVisibility(View.GONE);
-
     }
-
-
-    private void requestLocation() {
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINUTES, DISTANCE, locationListener);
-    }
-
 }

@@ -1,6 +1,7 @@
 package com.vena.wather.modules;
 
 import com.vena.wather.application.WeatherApplication;
+import com.vena.wather.events.LocationEvent;
 import com.vena.wather.handler.BaseScheduler;
 import com.vena.wather.services.BaseService;
 import com.vena.wather.ui.BaseActivity;
@@ -20,4 +21,5 @@ public interface AppComponent {
 
     void inject(BaseScheduler baseScheduler);
 
+    void inject(LocationEvent baseScheduler);
 }

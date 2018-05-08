@@ -8,4 +8,5 @@
     <string name="today">TODAY, </string>
     <string name="max">Max</string>
     <string name="min">Min</string>
+    <string name="no_connection">No internet connection</string>
 </resources>
