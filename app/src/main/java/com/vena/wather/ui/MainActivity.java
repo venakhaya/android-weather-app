@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.vena.wather.R;
+import com.vena.wather.events.LocationEvent;
 import com.vena.wather.events.ResultsReceiverEvent;
 import com.vena.wather.handler.WeatherJobScheduler;
 import com.vena.wather.model.Coordinates;
@@ -131,41 +131,20 @@ public class MainActivity extends BaseActivity {
         requestLocation();
     }
 
-    private LocationListener locationListener = new LocationListener() {
-
+    private LocationEvent locationListener = new LocationEvent() {
 
         @Override
-        public void onLocationChanged(Location location) {
+        public void onLocationCoordinate(Coordinates coordinates) {
+            Geocoder geocoder;
+            geocoder = new Geocoder(context, Locale.getDefault());
+            try {
+                addresses = geocoder.getFromLocation(coordinates.getLatitude(), coordinates.getLongitude(), 1);
+            } catch (Exception e) {
 
-            if (location != null) {
-                Geocoder geocoder;
-                coordinates = new Coordinates(location.getLatitude(), location.getLongitude());
-                geocoder = new Geocoder(context, Locale.getDefault());
-                try {
-                    addresses = geocoder.getFromLocation(coordinates.getLatitude(), coordinates.getLongitude(), 1);
-                } catch (Exception e) {
-
-                }
-                executeApi(coordinates);
             }
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
+            executeApi(coordinates);
         }
     };
-
 
     private void updateUI(final WeatherResponse weatherResponse) {
 
