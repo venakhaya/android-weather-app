@@ -1,12 +1,6 @@
 package com.vena.wather.ui;
 
-import android.Manifest;
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -15,9 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -39,10 +31,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity {
-    private static final long MINUTES = 1000;
-    private static final long DISTANCE = 10;
-    private static final int REQUEST_LOCATION = 1;
-
+    private static final long MINUTES = 50000;
+    private static final long DISTANCE = 100;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -68,6 +58,7 @@ public class MainActivity extends BaseActivity {
     private List<Address> addresses;
     private Coordinates coordinates;
 
+    private boolean apiBusy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,19 +69,55 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         activity = this;
         if (Util.hasInternetConnection(this)) {
+            apiBusy = true;
             if (coordinates != null) {
                 executeApi(coordinates);
             } else {
                 getLocation();
             }
+        } else {
+            Toast.makeText(context, "No internet connection", Toast.LENGTH_LONG).show();
+            progressBar.setVisibility(View.GONE);
         }
+
+
     }
+
+
+    private ResultsReceiverEvent weatherResultsReceiverEventListener = new ResultsReceiverEvent<WeatherResponse>() {
+        @Override
+        public void onSuccess(final WeatherResponse results) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateUI(results);
+                    apiBusy = false;
+                }
+            });
+
+        }
+
+
+        @Override
+        public void onFailed(String message) {
+            apiBusy = false;
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            progressBar.setVisibility(View.GONE);
+        }
+    };
 
     @Override
     protected void onResume() {
         super.onResume();
+
         if (Util.hasInternetConnection(this)) {
-            getLocation();
+            if (!apiBusy) {
+                if (coordinates != null) {
+                    executeApi(coordinates);
+                } else {
+                    getLocation();
+                }
+            }
         } else {
             Toast.makeText(context, "No internet connection", Toast.LENGTH_LONG).show();
             progressBar.setVisibility(View.GONE);
@@ -105,13 +132,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void getLocation() {
-
-        locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
-        if (hasLocationPermission()) {
-            requestLocation();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-        }
+        requestLocation();
     }
 
     private LocationListener locationListener = new LocationListener() {
@@ -149,24 +170,6 @@ public class MainActivity extends BaseActivity {
         }
     };
 
-    private ResultsReceiverEvent weatherResultsReceiverEventListener = new ResultsReceiverEvent<WeatherResponse>() {
-        @Override
-        public void onSuccess(final WeatherResponse results) {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updateUI(results);
-                }
-            });
-
-        }
-
-
-        @Override
-        public void onFailed(String message) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-        }
-    };
 
     private void updateUI(WeatherResponse results) {
         weatherResponse = results;
@@ -188,44 +191,12 @@ public class MainActivity extends BaseActivity {
         progressBar.setVisibility(View.GONE);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case 1:
-                if (hasLocationPermission()) {
-                    requestLocation();
-                } else {
-                    return;
-                }
-                break;
-            case 2: {
-                if (Util.hasInternetPermission(this) && (Util.hasInternetConnection(this))) {
-                    if (hasLocationPermission()) {
-                        requestLocation();
-                    } else {
-                        return;
-                    }
-
-                } else {
-                    return;
-                }
-
-            }
-        }
-
-    }
 
     private void requestLocation() {
+        locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINUTES, DISTANCE, locationListener);
-
     }
 
-    private boolean hasLocationPermission() {
-        return ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
-                (context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
 
     @Override
     protected void onPause() {

@@ -2,6 +2,7 @@ package com.vena.wather.services;
 
 import android.app.job.JobParameters;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.vena.wather.R;
 import com.vena.wather.events.ResultsReceiverEvent;
@@ -20,7 +21,7 @@ import retrofit2.Response;
  */
 
 public class WeatherJobService extends BaseService {
-
+    private static final String TAG = WeatherJobService.class.getSimpleName();
     private WeatherResponse weatherResponse;
 
     @Override
@@ -31,19 +32,25 @@ public class WeatherJobService extends BaseService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
+        Log.e(TAG, "Request API");
         Call<WeatherResponse> weatherResponseCall = weatherRequest.getWeather(params.getExtras().getDouble("lat"),
                 params.getExtras().getDouble("lon"), context.getString(R.string.appid));
         weatherResponseCall.enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+
+                Log.e(TAG, "getting response");
                 weatherResponse = response.body();
+
                 if (resultsReceiverEvent != null) {
                     if (weatherResponse == null) {
+                        Log.e(TAG, "Response  null");
                         resultsReceiverEvent.onFailed(context.getString(R.string.api_fail));
                         return;
                     }
-
+                    Log.e(TAG, "Response not null");
                     resultsReceiverEvent.onSuccess(weatherResponse);
+                    Log.e(TAG, "Updated results response");
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... voids) {
@@ -53,6 +60,8 @@ public class WeatherJobService extends BaseService {
                         }
                     };
 
+                } else {
+                    Log.e(TAG, "resultsReceiverEvent  null");
                 }
             }
 
@@ -77,7 +86,6 @@ public class WeatherJobService extends BaseService {
     public void onDestroy() {
         super.onDestroy();
         appDatabase.destroyInstance();
-        resultsReceiverEvent = null;
     }
 
     public static void setResultsReceiver(ResultsReceiverEvent resultsReceiverEvent) {

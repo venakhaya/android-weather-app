@@ -16,18 +16,19 @@ import java.util.Date;
 public class Util {
     public static boolean hasInternetConnection(Activity context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
-        if (hasInternetPermission(context)) {
-            return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
-        } else {
-            ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.INTERNET}, 2);
-            return false;
-        }
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
     public static boolean hasInternetPermission(Context context) {
         return ActivityCompat.checkSelfPermission(context, Manifest.permission.INTERNET)
                 == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
                 (context, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static boolean hasLocationPermission(Context context) {
+        return ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
+                (context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
     public static String getDate() {
