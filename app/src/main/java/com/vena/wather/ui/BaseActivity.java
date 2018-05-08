@@ -1,6 +1,7 @@
 package com.vena.wather.ui;
 
 import android.content.Context;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +15,9 @@ public class BaseActivity extends AppCompatActivity {
     @Inject
     public Context context;
     @Inject
-    JobHandler jobHandler;
+    public JobHandler jobHandler;
+    @Inject
+    public LocationManager locationManager;
 
 
     @Override

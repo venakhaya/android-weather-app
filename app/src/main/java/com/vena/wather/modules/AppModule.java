@@ -2,6 +2,7 @@ package com.vena.wather.modules;
 
 import android.app.job.JobScheduler;
 import android.content.Context;
+import android.location.LocationManager;
 
 import com.vena.wather.application.WeatherApplication;
 import com.vena.wather.database.AppDatabase;
@@ -42,6 +43,11 @@ public class AppModule {
     @Singleton
     public JobScheduler provideScheduler() {
         return (JobScheduler) provideApplicationContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+    }
+
+    @Provides
+    public LocationManager provideLocationManager() {
+        return (LocationManager) provideApplicationContext().getSystemService(Context.LOCATION_SERVICE);
     }
 
 }

@@ -31,6 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity {
+
     private static final long MINUTES = 50000;
     private static final long DISTANCE = 100;
 
@@ -53,11 +54,8 @@ public class MainActivity extends BaseActivity {
 
     private Activity activity;
     private PersistableBundle persistableBundle;
-    private LocationManager locationManager;
-    private WeatherResponse weatherResponse;
     private List<Address> addresses;
     private Coordinates coordinates;
-
     private boolean apiBusy;
 
     @Override
@@ -65,7 +63,6 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         activity = this;
         if (Util.hasInternetConnection(this)) {
@@ -82,7 +79,6 @@ public class MainActivity extends BaseActivity {
 
 
     }
-
 
     private ResultsReceiverEvent weatherResultsReceiverEventListener = new ResultsReceiverEvent<WeatherResponse>() {
         @Override
@@ -171,8 +167,8 @@ public class MainActivity extends BaseActivity {
     };
 
 
-    private void updateUI(WeatherResponse results) {
-        weatherResponse = results;
+    private void updateUI(final WeatherResponse weatherResponse) {
+
         dateTextView.setText(getString(R.string.today) + " " + Util.getDate());
         maxTextView.setText(getString(R.string.max) + " " + String.valueOf(weatherResponse.getMain().getMaxTemp()) + (char) 0x00B0 + "C");
         minTextView.setText(getString(R.string.min) + " " + String.valueOf(weatherResponse.getMain().getMinTemp()) + (char) 0x00B0 + "C");
@@ -189,11 +185,11 @@ public class MainActivity extends BaseActivity {
             locationTextView.setText(weatherResponse.getName() + ", " + weatherResponse.getSys().getCountry());
         }
         progressBar.setVisibility(View.GONE);
+
     }
 
 
     private void requestLocation() {
-        locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINUTES, DISTANCE, locationListener);
     }
 
