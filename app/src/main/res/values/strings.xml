@@ -6,4 +6,6 @@
     <string name="image_host">http://openweathermap.org/img/w/</string>
     <string name="api_fail">Failed to get weather</string>
     <string name="today">TODAY, </string>
+    <string name="max">Max</string>
+    <string name="min">Min</string>
 </resources>

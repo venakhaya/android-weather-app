@@ -50,10 +50,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
             android:gravity="center"
             android:textColor="@color/font_color"
-            android:textSize="14sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/location_text_view"
@@ -62,7 +63,7 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:gravity="center"
-            android:textColor="@color/font_color" />
+            android:textColor="@color/light_grey" />
     </LinearLayout>
 
     <ProgressBar

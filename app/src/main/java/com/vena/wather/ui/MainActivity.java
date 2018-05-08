@@ -40,7 +40,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity {
     private static final long MINUTES = 1000;
-    private static final long DISTANCE = 10000;
+    private static final long DISTANCE = 10;
     private static final int REQUEST_LOCATION = 1;
 
 
@@ -171,8 +171,8 @@ public class MainActivity extends BaseActivity {
     private void updateUI(WeatherResponse results) {
         weatherResponse = results;
         dateTextView.setText(getString(R.string.today) + " " + Util.getDate());
-        maxTextView.setText(String.valueOf(weatherResponse.getMain().getMaxTemp()) + (char) 0x00B0 + "C");
-        minTextView.setText(String.valueOf(weatherResponse.getMain().getMinTemp()) + (char) 0x00B0 + "C");
+        maxTextView.setText(getString(R.string.max) + " " + String.valueOf(weatherResponse.getMain().getMaxTemp()) + (char) 0x00B0 + "C");
+        minTextView.setText(getString(R.string.min) + " " + String.valueOf(weatherResponse.getMain().getMinTemp()) + (char) 0x00B0 + "C");
         String iconUrl = getString(R.string.image_host) + weatherResponse.getWeatherList().get(0).getIcon() + ".png";
         Picasso.get()
                 .load(iconUrl)
